@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>Wikipedia custom search</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript"></script>
+<link rel="apple-touch-icon" href="http://en.wikipedia.org/apple-touch-icon.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="copyright" href="http://creativecommons.org/licenses/by-sa/3.0/">
+<div id="WIKI">
+  <div>
+    <h1 id="title">
+    </h1>
+
+    <br>      
+   <form accept-charset="UTF-8" action="" id="inputform" method="post">
+      <input id="name" name="name" type="text">
+      <input name="commit" type="submit" value="Search">
+</form>
+
+  <button type="button" onclick="P_style('red')" >red</button>
+<button type="button" onclick="P_style('blue')">blue</button>
+
+    <br>
+  </div>
+
+
+  <div id="container">
+    <div id="wiki_container"></div>
+    <div></div>
+  </div>
+</div>
+<script language="JavaScript" type="text/javascript">
+
+  $('#inputform').submit(function(){
+    var name = $('#name').attr("value");
+    getAreaMetaInfo_Wikipedia(name);
+    return false;
+  });;
+
+function P_style(color){
+  $("body").css("background", color);
+}  
+
+function getAreaMetaInfo_Wikipedia(page_id) {
+	title = page_id;
+      $.ajax({
+        url: 'http://en.wikipedia.org/w/api.php',
+        data: {
+          action:'parse',
+          prop:'text',
+          page:title,
+          format:'json'
+        },
+        dataType:'jsonp',
+        success: function(data) {
+          wikipage = $("<div>"+data.parse.text['*']+"</div>");
+          wikipage.find('sup').remove();
+          wikipage.find('a').each(function() {
+             var href = $(this).attr('href');
+             /* put a check for wikipedia link. do not touch rest of the links*/
+             $(this)
+                .attr('href', "javascript:getAreaMetaInfo_Wikipedia('"+ href.substring(href.lastIndexOf('/')+1) +"')")
+          });
+          //console.log(wikipage)
+          $("#wiki_container").html(wikipage);
+          $("#title").html(page_id);
+          //$("#References").hide();
+         // $("div.reflist").hide();
+      	  //$('table.infobox').hide();
+      	  //$('table.toc').hide();
+      	  //$('table.navbox').hide();
+      	  //$('span.editsection').hide();
+         $('span.mw-editsection').hide();
+         console.log($("#name"));
+      	  $('#wiki_attribution').html("Description above from the Wikipedia article <a href='http://en.wikipedia.org/wiki/" +title+"' target='wikipedia'>"+title.replace(/_/g,' ')+
+      "</a>, licensed under <a href='http://creativecommons.org/licenses/by-sa/3.0/' target='wikipedia'>CC-BY-SA</a>, full list of contributors <a href='http://en.wikipedia.org/w/index.php?title="+title+
+      "&action=history' target='wikipedia'>here</a>. Community Pages are not affiliated with, or endorsed by, anyone associated with the topic.");
+        }
+      });
+}
+
+function switch_style ( css_title )
+{
+// You may use this script on your site free of charge provided
+// you do not remove this notice or the URL below. Script from
+// http://www.thesitewizard.com/javascripts/change-style-sheets.shtml
+  var i, link_tag ;
+  for (i = 0, link_tag = document.getElementsByTagName("link") ;
+    i < link_tag.length ; i++ ) {
+    if ((link_tag[i].rel.indexOf( "stylesheet" ) != -1) &&
+      link_tag[i].title) {
+      link_tag[i].disabled = true ;
+      if (link_tag[i].title == css_title) {
+        link_tag[i].disabled = false ;
+      }
+    }
+  }
+}
+</script>
