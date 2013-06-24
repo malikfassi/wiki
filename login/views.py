@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from login.forms import LoginForm, UtilisateurForm
-from login.models import Utilisateur
+from login.models import Utilisateur, WatchLater, FavoriteArticle
 from django.template import RequestContext
 
 def login(request):
@@ -61,3 +61,13 @@ def signin(request):
         formUtilisateur = UtilisateurForm()
         context = RequestContext(request,{"formUser":formUser, "formUtilisateur":formUtilisateur})
         return(render_to_response("signin.html",context))
+
+
+def getFavsFromRequest(request, nbOfArticle):
+    return FavoriteArticle.objects.filter(relationUtilisateur=Utilisateur.filter(profilBase=getLoggedUserFromRequest(request))).order_by('-datePubli')[:nbOfArticle]
+
+def getWatchLaterFromRequest(request, mnOfArticle):
+    return WatchLater.objects.filter(relationUtilisateur=Utilisateur.filter(profilBase=getLoggedUserFromRequest(request))).order_by('-datePubli')[:nbOfArticle]
+
+
+

@@ -13,8 +13,10 @@ class Utilisateur(models.Model):
 
 class WatchLater(models.Model):
 	ID = models.CharField(max_length=100)
+	datePubli = models.DateField(True, True)
 	relationUtilisateur =models.ForeignKey(Utilisateur) 
 
 class FavoriteArticle(models.Model):
 	ID = models.CharField(max_length=100)
+	datePubli = models.DateField(True, True)
 	relationUtilistateur = models.ForeignKey(Utilisateur)
